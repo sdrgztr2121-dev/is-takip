@@ -8,9 +8,10 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f1f5f9; color: #334155; min-height: 100vh; padding: 20px; }
-        .dashboard { display: grid; grid-template-columns: 280px 1fr 320px; gap: 20px; max-width: 1600px; margin: 0 auto; align-items: start; }
+        .dashboard { display: grid; grid-template-columns: 280px 1fr 350px; gap: 20px; max-width: 1600px; margin: 0 auto; align-items: start; }
         .card { background-color: #ffffff; padding: 20px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); margin-bottom: 15px; }
-        h2 { font-size: 17px; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        h2 { font-size: 16px; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .notepad-header-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
         .stat-sidebar { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .stat-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border-left: 6px solid #64748b; display: flex; flex-direction: column; gap: 4px; }
         .stat-card.total { border-left-color: #2563eb; }
@@ -26,15 +27,17 @@
         .btn-add { background-color: #2563eb; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .search-input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background-color: #f8fafc; margin-bottom: 15px; outline: none; }
         .tab-menu { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 15px; }
+        .tab-menu { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 15px; }
         .tab-btn { flex: 1; background: none; border: none; padding: 10px; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; }
         .tab-btn.active { color: #2563eb; border-bottom: 3px solid #2563eb; margin-bottom: -2px; }
         .task-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-        .task-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 8px; border-left: 5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.01); cursor: pointer; gap: 10px; }
-        .task-item.selected-task { box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15); outline: 2px solid #2563eb; }
+        .task-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 8px; border-left: 5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.01); cursor: pointer; gap: 10px; transition: all 0.2s; }
+        .task-item:hover { transform: translateX(2px); }
+        .task-item.selected-task { box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18); outline: 2px solid #2563eb; background-color: #eff6ff !important; }
         .task-item.priority-yuksek { background-color: #fff5f5; border-left-color: #ef4444; }
         .task-item.priority-orta { background-color: #fffbeb; border-left-color: #f59e0b; }
         .task-item.priority-dusuk { background-color: #f0fdf4; border-left-color: #10b981; }
-        .task-item.completed { background-color: #f8fafc !important; border-left-color: #cbd5e1 !important; }
+        .task-item.completed { background-color: #f8fafc !important; border-left-color: #cbd5e1 !important; opacity: 0.7; }
         .task-item.deleted-status { background-color: #f1f5f9 !important; border-left-color: #64748b !important; opacity: 0.8; }
         .task-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
         .task-checkbox { width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
@@ -51,13 +54,12 @@
         .btn-restore { background-color: #0ea5e9; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
         .countdown-timer { color: #dc2626; font-weight: 600; background-color: #fee2e2; padding: 1px 4px; border-radius: 4px; }
         .empty-message { text-align: center; color: #94a3b8; font-size: 13px; padding: 15px; }
-        .notepad-textarea { width: 100%; height: 350px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; line-height: 1.5; resize: none; outline: none; background-color: #fffdeb; color: #334155; transition: background-color 0.3s; }
-        .notepad-textarea.task-mode { background-color: #e0f2fe; }
-        .notepad-textarea:focus { border-color: #2563eb; }
+        .notepad-textarea { width: 100%; height: 400px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; line-height: 1.5; resize: none; outline: none; background-color: #fffdeb; color: #334155; transition: all 0.3s; }
+        .notepad-textarea.task-mode { background-color: #f0fdf4; border-color: #10b981; }
+        .notepad-textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
         .notepad-info { font-size: 11px; color: #94a3b8; text-align: right; margin-top: 5px; }
-        .btn-clear-select { font-size: 11px; background: #64748b; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+        .btn-clear-select { font-size: 11px; background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: 600; }
         
-        /* 📱 MOBİL (IPHONE) DÜZENLEMELERİ */
         @media (max-width: 900px) {
             body { padding: 10px; background-color: #f8fafc; }
             .dashboard { grid-template-columns: 1fr; gap: 10px; }
@@ -68,7 +70,7 @@
             .stat-value { font-size: 18px; }
             .input-section { flex-direction: column; gap: 8px; }
             input[type="text"], select, .btn-add { width: 100%; padding: 12px; font-size: 15px; }
-            .notepad-textarea { height: 200px; }
+            .notepad-textarea { height: 250px; }
         }
     </style>
 </head>
@@ -103,7 +105,10 @@
     </div>
 
     <div class="card">
-        <h2><span id="notepad-title">📝 Karalama Notları</span><button id="clearSelectBtn" class="btn-clear-select" style="display: none;" onclick="deselectTask()">Genel</button></h2>
+        <h2>
+            <span id="notepad-title" class="notepad-header-title">📝 Karalama Notları</span>
+            <button id="clearSelectBtn" class="btn-clear-select" style="display: none;" onclick="deselectTask()">Genel Notlar</button>
+        </h2>
         <textarea id="notepad" class="notepad-textarea" placeholder="Yükleniyor..." oninput="handleNoteInput()"></textarea>
         <div class="notepad-info">Bulut anlık eşitlenir</div>
     </div>
@@ -114,7 +119,7 @@
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // BURAYA KENDİ FIREBASE ŞİFRELERİNİ KOYACAKSIN:
- const firebaseConfig = {
+    const firebaseConfig = {
   apiKey: "AIzaSyB3uRFdgCSorihfyn7qJhZcersjpmxGA-g",
   authDomain: "is-takip-cbbd2.firebaseapp.com",
   projectId: "is-takip-cbbd2",
@@ -123,6 +128,7 @@
   appId: "1:695369463741:web:f25c6935753234a3eac4d4",
   measurementId: "G-P1C835G233"
 };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
@@ -130,48 +136,35 @@
     let currentTab = 'active';
     let selectedTaskId = null;
 
-    // ESKİ VERİLERİ KURTARMA KÖPRÜSÜ
-    function migrateOldLocalTasks() {
-        try {
-            const oldLocalTasks = JSON.parse(localStorage.getItem('tasks'));
-            const oldLocalNotes = localStorage.getItem('notepad_notes');
-            let updated = false;
-
-            if (oldLocalTasks && oldLocalTasks.length > 0 && dbData.tasks.length === 0) {
-                dbData.tasks = oldLocalTasks;
-                updated = true;
-            }
-            if (oldLocalNotes && !dbData.generalNotes) {
-                dbData.generalNotes = oldLocalNotes;
-                updated = true;
-            }
-            if (updated) {
-                pushToCloud();
-                localStorage.removeItem('tasks');
-                localStorage.removeItem('notepad_notes');
-            }
-        } catch(e) { console.log("Veri göçü hatası:", e); }
-    }
-
+    // GERÇEK ZAMANLI BULUT DİNLEYİCİSİ
     onSnapshot(doc(db, "is-takip-data", "global"), (docSnap) => {
         if (docSnap.exists()) {
             dbData = docSnap.data();
             if (!dbData.tasks) dbData.tasks = [];
-        } else {
-            migrateOldLocalTasks();
         }
         
-        migrateOldLocalTasks();
         updateStats();
         renderTasks();
         
+        // Yazma esnasında imleç sıçramasını önlemek için aktif odağı kontrol ediyoruz
         const notepad = document.getElementById('notepad');
-        if (!selectedTaskId) {
-            notepad.value = dbData.generalNotes || "";
-            notepad.placeholder = "Genel notlarınızı buraya yazın...";
-        } else {
-            const task = dbData.tasks.find(t => t.id === selectedTaskId);
-            if (task) notepad.value = task.note || "";
+        if (document.activeElement !== notepad) {
+            if (!selectedTaskId) {
+                notepad.value = dbData.generalNotes || "";
+                document.getElementById('notepad-title').innerText = `📝 Karalama Notları`;
+                document.getElementById('clearSelectBtn').style.display = 'none';
+                notepad.classList.remove('task-mode');
+            } else {
+                const task = dbData.tasks.find(t => t.id === selectedTaskId);
+                if (task) {
+                    notepad.value = task.note || "";
+                    document.getElementById('notepad-title').innerText = `📌 ${task.text}`;
+                    document.getElementById('clearSelectBtn').style.display = 'inline-block';
+                    notepad.classList.add('task-mode');
+                } else {
+                    deselectTask();
+                }
+            }
         }
     });
 
@@ -198,9 +191,9 @@
         const task = dbData.tasks.find(t => t.id === id);
         if (!task) return;
 
-        document.getElementById('notepad-title').innerHTML = `📌 Notlar`;
-        document.getElementById('clearSelectBtn').style.display = 'inline-block';
         const notepad = document.getElementById('notepad');
+        document.getElementById('notepad-title').innerText = `📌 ${task.text}`;
+        document.getElementById('clearSelectBtn').style.display = 'inline-block';
         notepad.classList.add('task-mode');
         notepad.value = task.note || "";
         renderTasks();
@@ -208,9 +201,9 @@
 
     window.deselectTask = function() {
         selectedTaskId = null;
+        const notepad = document.getElementById('notepad');
         document.getElementById('notepad-title').innerText = `📝 Karalama Notları`;
         document.getElementById('clearSelectBtn').style.display = 'none';
-        const notepad = document.getElementById('notepad');
         notepad.classList.remove('task-mode');
         notepad.value = dbData.generalNotes || "";
         renderTasks();
@@ -339,7 +332,7 @@
             } else {
                 li.className = `task-item priority-${pClass} ${task.completed ? 'completed' : ''} ${isSelectedClass}`;
                 li.setAttribute('onclick', `selectTask(${task.id})`);
-                li.innerHTML = `<div class="task-left"><input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id}, event)"><div class="task-text-container"><span class="task-text">${task.text}</span><div class="task-meta"><span class="badge badge-${pClass}">${pLabel}</span><span>⏱️ ${task.timestamp}</span>${task.note ? '📝' : ''}</div></div></div><button class="btn-delete" onclick="moveToTrash(${task.id}, event)">Sil</button>`;
+                li.innerHTML = `<div class="task-left"><input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id}, event)"><div class="task-text-container"><span class="task-text">${task.text}</span><div class="task-meta"><span class="badge badge-${pClass}">${pLabel}</span><span>⏱️ ${task.timestamp}</span>${task.note ? ' 📝' : ''}</div></div></div><button class="btn-delete" onclick="moveToTrash(${task.id}, event)">Sil</button>`;
             }
             taskList.appendChild(li);
         });
