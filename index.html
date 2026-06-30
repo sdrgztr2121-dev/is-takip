@@ -8,10 +8,10 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f1f5f9; color: #334155; min-height: 100vh; padding: 20px; }
-        .dashboard { display: grid; grid-template-columns: 280px 1fr 350px; gap: 20px; max-width: 1600px; margin: 0 auto; align-items: start; }
+        /* SAĞ PANEL SİLİNDİ, İKİ SÜTUNA DÜŞÜRÜLDÜ VE GENİŞLETİLDİ */
+        .dashboard { display: grid; grid-template-columns: 280px 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; align-items: start; }
         .card { background-color: #ffffff; padding: 20px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); margin-bottom: 15px; }
         h2 { font-size: 16px; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .notepad-header-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
         .stat-sidebar { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .stat-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border-left: 6px solid #64748b; display: flex; flex-direction: column; gap: 4px; }
         .stat-card.total { border-left-color: #2563eb; }
@@ -27,13 +27,11 @@
         .btn-add { background-color: #2563eb; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; }
         .search-input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background-color: #f8fafc; margin-bottom: 15px; outline: none; }
         .tab-menu { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 15px; }
-        .tab-menu { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 15px; }
         .tab-btn { flex: 1; background: none; border: none; padding: 10px; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; }
         .tab-btn.active { color: #2563eb; border-bottom: 3px solid #2563eb; margin-bottom: -2px; }
         .task-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-        .task-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 8px; border-left: 5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.01); cursor: pointer; gap: 10px; transition: all 0.2s; }
+        .task-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 8px; border-left: 5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.01); gap: 10px; transition: all 0.2s; }
         .task-item:hover { transform: translateX(2px); }
-        .task-item.selected-task { box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18); outline: 2px solid #2563eb; background-color: #eff6ff !important; }
         .task-item.priority-yuksek { background-color: #fff5f5; border-left-color: #ef4444; }
         .task-item.priority-orta { background-color: #fffbeb; border-left-color: #f59e0b; }
         .task-item.priority-dusuk { background-color: #f0fdf4; border-left-color: #10b981; }
@@ -54,11 +52,6 @@
         .btn-restore { background-color: #0ea5e9; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
         .countdown-timer { color: #dc2626; font-weight: 600; background-color: #fee2e2; padding: 1px 4px; border-radius: 4px; }
         .empty-message { text-align: center; color: #94a3b8; font-size: 13px; padding: 15px; }
-        .notepad-textarea { width: 100%; height: 400px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; line-height: 1.5; resize: none; outline: none; background-color: #fffdeb; color: #334155; transition: all 0.3s; }
-        .notepad-textarea.task-mode { background-color: #f0fdf4; border-color: #10b981; }
-        .notepad-textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        .notepad-info { font-size: 11px; color: #94a3b8; text-align: right; margin-top: 5px; }
-        .btn-clear-select { font-size: 11px; background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-weight: 600; }
         
         @media (max-width: 900px) {
             body { padding: 10px; background-color: #f8fafc; }
@@ -70,13 +63,13 @@
             .stat-value { font-size: 18px; }
             .input-section { flex-direction: column; gap: 8px; }
             input[type="text"], select, .btn-add { width: 100%; padding: 12px; font-size: 15px; }
-            .notepad-textarea { height: 250px; }
         }
     </style>
 </head>
 <body>
 
 <div class="dashboard">
+    <!-- SOL PANEL: İSTATİSTİKLER -->
     <div class="stat-sidebar">
         <div class="card" style="padding: 15px; text-align: center; font-weight: bold; font-size: 15px; background: #1e293b; color: white;">📊 Proje Durum Özeti</div>
         <div class="stat-card total"><span class="stat-title">Devam Eden</span><span class="stat-value" id="stat-total-val">0</span></div>
@@ -84,6 +77,7 @@
         <div class="stat-card done"><span class="stat-title">Tamamlanan</span><span class="stat-value" id="stat-done-val">0</span></div>
     </div>
 
+    <!-- SAĞ PANEL: GÖREVLER -->
     <div class="card main-panel">
         <h2>📋 İş Listem & Panel</h2>
         <div class="input-section">
@@ -103,15 +97,6 @@
         </div>
         <ul id="taskList" class="task-list"></ul>
     </div>
-
-    <div class="card">
-        <h2>
-            <span id="notepad-title" class="notepad-header-title">📝 Karalama Notları</span>
-            <button id="clearSelectBtn" class="btn-clear-select" style="display: none;" onclick="deselectTask()">Genel Notlar</button>
-        </h2>
-        <textarea id="notepad" class="notepad-textarea" placeholder="Yükleniyor..." oninput="handleNoteInput()"></textarea>
-        <div class="notepad-info">Bulut anlık eşitlenir</div>
-    </div>
 </div>
 
 <script type="module">
@@ -119,7 +104,7 @@
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // BURAYA KENDİ FIREBASE ŞİFRELERİNİ KOYACAKSIN:
-    const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyB3uRFdgCSorihfyn7qJhZcersjpmxGA-g",
   authDomain: "is-takip-cbbd2.firebaseapp.com",
   projectId: "is-takip-cbbd2",
@@ -132,11 +117,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    let dbData = { tasks: [], generalNotes: "" };
+    let dbData = { tasks: [] };
     let currentTab = 'active';
-    let selectedTaskId = null;
 
-    // GERÇEK ZAMANLI BULUT DİNLEYİCİSİ
     onSnapshot(doc(db, "is-takip-data", "global"), (docSnap) => {
         if (docSnap.exists()) {
             dbData = docSnap.data();
@@ -145,68 +128,10 @@
         
         updateStats();
         renderTasks();
-        
-        // Yazma esnasında imleç sıçramasını önlemek için aktif odağı kontrol ediyoruz
-        const notepad = document.getElementById('notepad');
-        if (document.activeElement !== notepad) {
-            if (!selectedTaskId) {
-                notepad.value = dbData.generalNotes || "";
-                document.getElementById('notepad-title').innerText = `📝 Karalama Notları`;
-                document.getElementById('clearSelectBtn').style.display = 'none';
-                notepad.classList.remove('task-mode');
-            } else {
-                const task = dbData.tasks.find(t => t.id === selectedTaskId);
-                if (task) {
-                    notepad.value = task.note || "";
-                    document.getElementById('notepad-title').innerText = `📌 ${task.text}`;
-                    document.getElementById('clearSelectBtn').style.display = 'inline-block';
-                    notepad.classList.add('task-mode');
-                } else {
-                    deselectTask();
-                }
-            }
-        }
     });
 
     async function pushToCloud() {
         await setDoc(doc(db, "is-takip-data", "global"), dbData);
-    }
-
-    window.handleNoteInput = function() {
-        const text = document.getElementById('notepad').value;
-        if (selectedTaskId) {
-            dbData.tasks = dbData.tasks.map(t => {
-                if (t.id === selectedTaskId) t.note = text;
-                return t;
-            });
-        } else {
-            dbData.generalNotes = text;
-        }
-        pushToCloud();
-    }
-
-    window.selectTask = function(id) {
-        if (currentTab === 'deleted') return;
-        selectedTaskId = id;
-        const task = dbData.tasks.find(t => t.id === id);
-        if (!task) return;
-
-        const notepad = document.getElementById('notepad');
-        document.getElementById('notepad-title').innerText = `📌 ${task.text}`;
-        document.getElementById('clearSelectBtn').style.display = 'inline-block';
-        notepad.classList.add('task-mode');
-        notepad.value = task.note || "";
-        renderTasks();
-    }
-
-    window.deselectTask = function() {
-        selectedTaskId = null;
-        const notepad = document.getElementById('notepad');
-        document.getElementById('notepad-title').innerText = `📝 Karalama Notları`;
-        document.getElementById('clearSelectBtn').style.display = 'none';
-        notepad.classList.remove('task-mode');
-        notepad.value = dbData.generalNotes || "";
-        renderTasks();
     }
 
     window.addTask = function() {
@@ -225,8 +150,7 @@
             completed: false,
             isDeleted: false,
             deletedAt: null,
-            timestamp: `${dateString} - ${timeString}`,
-            note: ""
+            timestamp: `${dateString} - ${timeString}`
         };
 
         dbData.tasks.push(newTask);
@@ -245,7 +169,6 @@
 
     window.moveToTrash = function(id, event) {
         event.stopPropagation();
-        if (selectedTaskId === id) deselectTask();
         dbData.tasks = dbData.tasks.map(t => {
             if (t.id === id) { t.isDeleted = true; t.deletedAt = Date.now(); }
             return t;
@@ -285,7 +208,6 @@
         const now = Date.now();
         dbData.tasks = dbData.tasks.filter(t => {
             if (t.deletedAt && (now - t.deletedAt >= 300000)) {
-                if (selectedTaskId === t.id) deselectTask();
                 changed = true;
                 return false;
             }
@@ -320,7 +242,6 @@
             const li = document.createElement('li');
             let pLabel = task.priority === 3 ? 'Yüksek' : task.priority === 2 ? 'Orta' : 'Düşük';
             let pClass = task.priority === 3 ? 'yuksek' : task.priority === 2 ? 'orta' : 'dusuk';
-            let isSelectedClass = (task.id === selectedTaskId) ? 'selected-task' : '';
 
             if (currentTab === 'deleted') {
                 const msLeft = 300000 - (now - task.deletedAt);
@@ -330,9 +251,8 @@
                 li.className = `task-item deleted-status`;
                 li.innerHTML = `<div class="task-left"><div class="task-text-container"><span class="task-text">${task.text}</span><div class="task-meta"><span class="badge badge-${pClass}">${pLabel}</span><span class="countdown-timer">⏳ ${min}:${sec < 10 ? '0' : ''}${sec}</span></div></div></div><div class="action-btns"><button class="btn-restore" onclick="restoreTask(${task.id}, event)">Geri</button></div>`;
             } else {
-                li.className = `task-item priority-${pClass} ${task.completed ? 'completed' : ''} ${isSelectedClass}`;
-                li.setAttribute('onclick', `selectTask(${task.id})`);
-                li.innerHTML = `<div class="task-left"><input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id}, event)"><div class="task-text-container"><span class="task-text">${task.text}</span><div class="task-meta"><span class="badge badge-${pClass}">${pLabel}</span><span>⏱️ ${task.timestamp}</span>${task.note ? ' 📝' : ''}</div></div></div><button class="btn-delete" onclick="moveToTrash(${task.id}, event)">Sil</button>`;
+                li.className = `task-item priority-${pClass} ${task.completed ? 'completed' : ''}`;
+                li.innerHTML = `<div class="task-left"><input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id}, event)"><div class="task-text-container"><span class="task-text">${task.text}</span><div class="task-meta"><span class="badge badge-${pClass}">${pLabel}</span><span>⏱️ ${task.timestamp}</span></div></div></div><button class="btn-delete" onclick="moveToTrash(${task.id}, event)">Sil</button>`;
             }
             taskList.appendChild(li);
         });
