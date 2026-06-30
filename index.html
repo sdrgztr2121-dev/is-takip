@@ -57,6 +57,7 @@
         .notepad-info { font-size: 11px; color: #94a3b8; text-align: right; margin-top: 5px; }
         .btn-clear-select { font-size: 11px; background: #64748b; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
         
+        /* 📱 MOBİL (IPHONE) DÜZENLEMELERİ */
         @media (max-width: 900px) {
             body { padding: 10px; background-color: #f8fafc; }
             .dashboard { grid-template-columns: 1fr; gap: 10px; }
@@ -74,7 +75,6 @@
 <body>
 
 <div class="dashboard">
-    <!-- SOL TARAF -->
     <div class="stat-sidebar">
         <div class="card" style="padding: 15px; text-align: center; font-weight: bold; font-size: 15px; background: #1e293b; color: white;">📊 Proje Durum Özeti</div>
         <div class="stat-card total"><span class="stat-title">Devam Eden</span><span class="stat-value" id="stat-total-val">0</span></div>
@@ -82,11 +82,10 @@
         <div class="stat-card done"><span class="stat-title">Tamamlanan</span><span class="stat-value" id="stat-done-val">0</span></div>
     </div>
 
-    <!-- ORTA TARAF -->
     <div class="card main-panel">
         <h2>📋 İş Listem & Panel</h2>
         <div class="input-section">
-            <input type="text" id="taskInput" placeholder="Yeni bir g&ouml;rev yazın...">
+            <input type="text" id="taskInput" placeholder="Yeni bir görev yazın...">
             <select id="prioritySelect">
                 <option value="3">🚨 Yüksek</option>
                 <option value="2" selected>⏳ Orta</option>
@@ -103,7 +102,6 @@
         <ul id="taskList" class="task-list"></ul>
     </div>
 
-    <!-- SAĞ TARAF -->
     <div class="card">
         <h2><span id="notepad-title">📝 Karalama Notları</span><button id="clearSelectBtn" class="btn-clear-select" style="display: none;" onclick="deselectTask()">Genel</button></h2>
         <textarea id="notepad" class="notepad-textarea" placeholder="Yükleniyor..." oninput="handleNoteInput()"></textarea>
@@ -111,21 +109,20 @@
     </div>
 </div>
 
-<!-- FIREBASE BAĞLANTISI VE KOD MOTORU -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // KENDİ FIREBASE ŞİFRELERİNİ BU ARADAKİ PARANTEZE KOYACAKSIN:
+    // BURAYA KENDİ FIREBASE ŞİFRELERİNİ KOYACAKSIN:
     const firebaseConfig = {
-        apiKey: "AIzaSy...",
-        authDomain: "is-takip...",
-        projectId: "is-takip...",
-        storageBucket: "is-takip...",
-        messagingSenderId: "...",
-        appId: "..."
-    };
-
+  apiKey: "AIzaSyB3uRFdgCSorihfyn7qJhZcersjpmxGA-g",
+  authDomain: "is-takip-cbbd2.firebaseapp.com",
+  projectId: "is-takip-cbbd2",
+  storageBucket: "is-takip-cbbd2.firebasestorage.app",
+  messagingSenderId: "695369463741",
+  appId: "1:695369463741:web:f25c6935753234a3eac4d4",
+  measurementId: "G-P1C835G233"
+};
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
@@ -133,7 +130,7 @@
     let currentTab = 'active';
     let selectedTaskId = null;
 
-    // KÖPRÜ FONKSİYONU: Eski bilgisayarda kalan görevleri bulur ve ilk açılışta Firebase'e taşır.
+    // ESKİ VERİLERİ KURTARMA KÖPRÜSÜ
     function migrateOldLocalTasks() {
         try {
             const oldLocalTasks = JSON.parse(localStorage.getItem('tasks'));
@@ -150,11 +147,10 @@
             }
             if (updated) {
                 pushToCloud();
-                // Taşıma bittiği için local'i temizle ki çakışmasın
                 localStorage.removeItem('tasks');
                 localStorage.removeItem('notepad_notes');
             }
-        } catch(e) { console.log("Göç hatası:", e); }
+        } catch(e) { console.log("Veri göçü hatası:", e); }
     }
 
     onSnapshot(doc(db, "is-takip-data", "global"), (docSnap) => {
@@ -162,13 +158,10 @@
             dbData = docSnap.data();
             if (!dbData.tasks) dbData.tasks = [];
         } else {
-            // Veritabanı bulutta tamamen yeniyse köprüyü çalıştır
             migrateOldLocalTasks();
         }
         
-        // Eğer buluttan veri başarıyla geldiyse ama yine de local'de kalmış veri varsa taşı
         migrateOldLocalTasks();
-
         updateStats();
         renderTasks();
         
