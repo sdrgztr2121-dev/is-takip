@@ -8,10 +8,11 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f1f5f9; color: #334155; min-height: 100vh; padding: 20px; }
-        /* SAĞ PANEL SİLİNDİ, İKİ SÜTUNA DÜŞÜRÜLDÜ VE GENİŞLETİLDİ */
-        .dashboard { display: grid; grid-template-columns: 280px 1fr; gap: 20px; max-width: 1200px; margin: 0 auto; align-items: start; }
+        .dashboard { display: grid; grid-template-columns: 260px 1fr 380px; gap: 20px; max-width: 1600px; margin: 0 auto; align-items: start; }
         .card { background-color: #ffffff; padding: 20px; border-radius: 14px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); margin-bottom: 15px; }
         h2 { font-size: 16px; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        
+        /* Sol Panel: İstatistikler */
         .stat-sidebar { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .stat-card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); border-left: 6px solid #64748b; display: flex; flex-direction: column; gap: 4px; }
         .stat-card.total { border-left-color: #2563eb; }
@@ -19,24 +20,30 @@
         .stat-card.done { border-left-color: #10b981; }
         .stat-title { font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; }
         .stat-value { font-size: 24px; font-weight: 700; color: #1e293b; }
+        
+        /* Orta Panel: Veri Girişi ve Listeler */
         .main-panel { min-width: 0; }
         .input-section { display: flex; gap: 8px; margin-bottom: 15px; }
         input[type="text"], select { padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; }
         input[type="text"] { flex: 2; min-width: 0; }
         select { flex: 1; background-color: #fff; cursor: pointer; }
         .btn-add { background-color: #2563eb; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; }
-        .search-input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; background-color: #f8fafc; margin-bottom: 15px; outline: none; }
+        
         .tab-menu { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 15px; }
         .tab-btn { flex: 1; background: none; border: none; padding: 10px; font-size: 13px; font-weight: 600; color: #64748b; cursor: pointer; }
         .tab-btn.active { color: #2563eb; border-bottom: 3px solid #2563eb; margin-bottom: -2px; }
+        
+        /* Görev Satırları */
         .task-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-        .task-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 8px; border-left: 5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.01); gap: 10px; transition: all 0.2s; }
+        .task-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-radius: 8px; border-left: 5px solid #cbd5e1; box-shadow: 0 2px 5px rgba(0,0,0,0.01); cursor: pointer; gap: 10px; transition: all 0.2s; background-color: white; }
         .task-item:hover { transform: translateX(2px); }
-        .task-item.priority-yuksek { background-color: #fff5f5; border-left-color: #ef4444; }
-        .task-item.priority-orta { background-color: #fffbeb; border-left-color: #f59e0b; }
-        .task-item.priority-dusuk { background-color: #f0fdf4; border-left-color: #10b981; }
+        .task-item.selected-task { box-shadow: 0 4px 12px rgba(37, 99, 235, 0.18); outline: 2px solid #2563eb; background-color: #eff6ff !important; }
+        .task-item.priority-3 { background-color: #fff5f5; border-left-color: #ef4444; }
+        .task-item.priority-2 { background-color: #fffbeb; border-left-color: #f59e0b; }
+        .task-item.priority-1 { background-color: #f0fdf4; border-left-color: #10b981; }
         .task-item.completed { background-color: #f8fafc !important; border-left-color: #cbd5e1 !important; opacity: 0.7; }
-        .task-item.deleted-status { background-color: #f1f5f9 !important; border-left-color: #64748b !important; opacity: 0.8; }
+        .task-item.deleted-status { background-color: #f1f5f9 !important; border-left-color: #64748b !important; opacity: 0.8; cursor: default; }
+        
         .task-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
         .task-checkbox { width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; }
         .task-text-container { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -44,14 +51,22 @@
         .task-item.completed .task-text { text-decoration: line-through; color: #94a3b8; }
         .task-meta { font-size: 11px; color: #64748b; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
         .badge { padding: 1px 4px; border-radius: 4px; font-size: 9px; font-weight: 600; text-transform: uppercase; }
-        .badge-yuksek { background-color: #fee2e2; color: #ef4444; }
-        .badge-orta { background-color: #fef3c7; color: #d97706; }
-        .badge-dusuk { background-color: #d1fae5; color: #059669; }
+        
+        /* Buton Alanları */
         .action-btns { display: flex; gap: 6px; flex-shrink: 0; }
+        .btn-edit { background-color: #e2e8f0; color: #475569; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: background 0.2s; }
+        .btn-edit:hover { background-color: #cbd5e1; }
         .btn-delete { background-color: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
         .btn-restore { background-color: #0ea5e9; color: white; border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; }
-        .countdown-timer { color: #dc2626; font-weight: 600; background-color: #fee2e2; padding: 1px 4px; border-radius: 4px; }
         .empty-message { text-align: center; color: #94a3b8; font-size: 13px; padding: 15px; }
+        .countdown-timer { color: #ef4444; font-weight: 600; font-size: 11px; }
+        
+        /* Sağ Panel: Not Alanı */
+        .notepad-textarea { width: 100%; height: 420px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; line-height: 1.6; resize: none; outline: none; background-color: #ffffff; color: #334155; transition: all 0.3s; }
+        .notepad-textarea:disabled { background-color: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+        .notepad-textarea.active-mode { background-color: #fffdeb; border-color: #eab308; }
+        .notepad-info { font-size: 11px; color: #94a3b8; text-align: right; margin-top: 5px; }
+        .notepad-header-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px; }
         
         @media (max-width: 900px) {
             body { padding: 10px; background-color: #f8fafc; }
@@ -63,23 +78,22 @@
             .stat-value { font-size: 18px; }
             .input-section { flex-direction: column; gap: 8px; }
             input[type="text"], select, .btn-add { width: 100%; padding: 12px; font-size: 15px; }
+            .notepad-textarea { height: 250px; }
         }
     </style>
 </head>
 <body>
 
 <div class="dashboard">
-    <!-- SOL PANEL: İSTATİSTİKLER -->
     <div class="stat-sidebar">
-        <div class="card" style="padding: 15px; text-align: center; font-weight: bold; font-size: 15px; background: #1e293b; color: white;">📊 Proje Durum Özeti</div>
+        <div class="card" style="padding: 15px; text-align: center; font-weight: bold; font-size: 15px; background: #1e293b; color: white;">📊 Durum Özeti</div>
         <div class="stat-card total"><span class="stat-title">Devam Eden</span><span class="stat-value" id="stat-total-val">0</span></div>
-        <div class="stat-card high"><span class="stat-title">Yüksek</span><span class="stat-value" id="stat-high-val">0</span></div>
-        <div class="stat-card done"><span class="stat-title">Tamamlanan</span><span class="stat-value" id="stat-done-val">0</span></div>
+        <div class="stat-card high"><span class="stat-title">Yüksek Önem</span><span class="stat-value" id="stat-high-val">0</span></div>
+        <div class="card done"><span class="stat-title">Tamamlanan</span><span class="stat-value" id="stat-done-val">0</span></div>
     </div>
 
-    <!-- SAĞ PANEL: GÖREVLER -->
     <div class="card main-panel">
-        <h2>📋 İş Listem & Panel</h2>
+        <h2>📋 Görev Yönetimi</h2>
         <div class="input-section">
             <input type="text" id="taskInput" placeholder="Yeni bir görev yazın...">
             <select id="prioritySelect">
@@ -89,13 +103,21 @@
             </select>
             <button class="btn-add" onclick="addTask()">Ekle</button>
         </div>
-        <input type="text" id="searchInput" class="search-input" placeholder="Görevlerde aratın..." oninput="renderTasks()">
+        
         <div class="tab-menu">
             <button class="tab-btn active" id="tab-active" onclick="switchTab('active')">Devam Eden</button>
             <button class="tab-btn" id="tab-completed" onclick="switchTab('completed')">Bitenler</button>
-            <button class="tab-btn" id="tab-deleted" onclick="switchTab('deleted')">Çöp</button>
+            <button class="tab-btn" id="tab-deleted" onclick="switchTab('deleted')">Çöp Kutusu</button>
         </div>
         <ul id="taskList" class="task-list"></ul>
+    </div>
+
+    <div class="card">
+        <h2>
+            <span id="notepad-title" class="notepad-header-title">📝 Görev Notu</span>
+        </h2>
+        <textarea id="notepad" class="notepad-textarea" placeholder="Not eklemek veya görmek için listeden bir göreve tıklayın." oninput="handleNoteInput()" disabled></textarea>
+        <div class="notepad-info">Bulut anlık eşitlenir</div>
     </div>
 </div>
 
@@ -103,7 +125,9 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // BURAYA KENDİ FIREBASE ŞİFRELERİNİ KOYACAKSIN:
+    // =================================================================
+    // 115. SATIR - BURAYA KENDİ FIREBASE ŞİFRELERİNİ KOYACAKSIN:
+    // =================================================================
 const firebaseConfig = {
   apiKey: "AIzaSyB3uRFdgCSorihfyn7qJhZcersjpmxGA-g",
   authDomain: "is-takip-cbbd2.firebaseapp.com",
@@ -119,7 +143,9 @@ const firebaseConfig = {
 
     let dbData = { tasks: [] };
     let currentTab = 'active';
+    let selectedTaskId = null;
 
+    // GERÇEK ZAMANLI BULUT DİNLEYİCİSİ
     onSnapshot(doc(db, "is-takip-data", "global"), (docSnap) => {
         if (docSnap.exists()) {
             dbData = docSnap.data();
@@ -128,12 +154,36 @@ const firebaseConfig = {
         
         updateStats();
         renderTasks();
+        
+        // Yazma esnasında imleç sıçramasını önlemek için aktif odağı kontrol ediyoruz
+        const notepad = document.getElementById('notepad');
+        if (document.activeElement !== notepad) {
+            if (!selectedTaskId) {
+                notepad.value = "";
+                document.getElementById('notepad-title').innerText = `📝 Görev Notu`;
+                notepad.disabled = true;
+                notepad.classList.remove('active-mode');
+                notepad.placeholder = "Not eklemek veya görmek için listeden bir göreve tıklayın.";
+            } else {
+                const task = dbData.tasks.find(t => t.id === selectedTaskId);
+                if (task) {
+                    notepad.value = task.note || "";
+                    document.getElementById('notepad-title').innerText = `📌 ${task.text}`;
+                    notepad.disabled = false;
+                    notepad.classList.add('active-mode');
+                    notepad.placeholder = `"${task.text}" görevi için notlarınızı buraya yazın...`;
+                } else {
+                    deselectNotepad();
+                }
+            }
+        }
     });
 
     async function pushToCloud() {
         await setDoc(doc(db, "is-takip-data", "global"), dbData);
     }
 
+    // GÖREV EKLEME FONKSİYONU
     window.addTask = function() {
         const taskInput = document.getElementById('taskInput');
         const prioritySelect = document.getElementById('prioritySelect');
@@ -150,7 +200,8 @@ const firebaseConfig = {
             completed: false,
             isDeleted: false,
             deletedAt: null,
-            timestamp: `${dateString} - ${timeString}`
+            timestamp: `${dateString} - ${timeString}`,
+            note: ""
         };
 
         dbData.tasks.push(newTask);
@@ -158,41 +209,117 @@ const firebaseConfig = {
         taskInput.value = '';
     }
 
-    window.toggleTask = function(id, event) {
-        event.stopPropagation();
-        dbData.tasks = dbData.tasks.map(t => {
-            if (t.id === id) t.completed = !t.completed;
-            return t;
-        });
+    // GÖREV METNİNİ DÜZENLEME FONKSİYONU
+    window.editTask = function(id, event) {
+        event.stopPropagation(); 
+        const task = dbData.tasks.find(t => t.id === id);
+        if (!task) return;
+
+        const newText = prompt("Görev adını düzenleyin:", task.text);
+        if (newText === null) return; 
+
+        const trimmed = newText.trim();
+        if (trimmed === "") {
+            alert("Görev adı boş bırakılamaz!");
+            return;
+        }
+
+        task.text = trimmed;
+
+        if (selectedTaskId === id) {
+            document.getElementById('notepad-title').innerText = `📌 ${trimmed}`;
+            document.getElementById('notepad').placeholder = `"${trimmed}" görevi için notlarınızı buraya yazın...`;
+        }
+
         pushToCloud();
     }
 
+    // LİSTEDEN BİR GÖREVE TIKLANDIĞINDA SAĞ PANELİ AÇAN FONKSİYON
+    window.selectTask = function(id) {
+        if (currentTab === 'deleted') return;
+        selectedTaskId = id;
+        
+        const task = dbData.tasks.find(t => t.id === id);
+        if (!task) return;
+        
+        const notepad = document.getElementById('notepad');
+        document.getElementById('notepad-title').innerText = `📌 ${task.text}`;
+        notepad.disabled = false;
+        notepad.classList.add('active-mode');
+        notepad.placeholder = `"${task.text}" görevi için notlarınızı buraya yazın...`;
+        notepad.value = task.note || "";
+        
+        renderTasks();
+    }
+
+    // SEÇİMİ SIFIRLAMA (NOT ALANINI KAPATMA)
+    window.deselectNotepad = function() {
+        selectedTaskId = null;
+        const notepad = document.getElementById('notepad');
+        document.getElementById('notepad-title').innerText = `📝 Görev Notu`;
+        notepad.disabled = true;
+        notepad.classList.remove('active-mode');
+        notepad.placeholder = "Not eklemek veya görmek için listeden bir göreve tıklayın.";
+        notepad.value = "";
+        renderTasks();
+    }
+
+    // NOT YAZILDIĞINDA ANLIK KAYDEDEN FONKSİYON
+    window.handleNoteInput = function() {
+        if (!selectedTaskId) return;
+        const text = document.getElementById('notepad').value;
+        
+        const task = dbData.tasks.find(t => t.id === selectedTaskId);
+        if (task) {
+            task.note = text;
+            setDoc(doc(db, "is-takip-data", "global"), dbData);
+        }
+    }
+
+    // TİK İŞARETİ ATMA FONKSİYONU
+    window.toggleTask = function(id, event) {
+        event.stopPropagation(); 
+        const task = dbData.tasks.find(t => t.id === id);
+        if (task) {
+            task.completed = !task.completed;
+        }
+        pushToCloud();
+    }
+
+    // GÖREVİ ÇÖPE ATMA
     window.moveToTrash = function(id, event) {
         event.stopPropagation();
-        dbData.tasks = dbData.tasks.map(t => {
-            if (t.id === id) { t.isDeleted = true; t.deletedAt = Date.now(); }
-            return t;
-        });
+        if (selectedTaskId === id) deselectNotepad();
+        const task = dbData.tasks.find(t => t.id === id);
+        if (task) {
+            task.isDeleted = true;
+            task.deletedAt = Date.now(); 
+        }
         pushToCloud();
     }
 
+    // GÖREVİ ÇÖPTEN GERİ ALMA
     window.restoreTask = function(id, event) {
         event.stopPropagation();
-        dbData.tasks = dbData.tasks.map(t => {
-            if (t.id === id) { t.isDeleted = false; t.deletedAt = null; }
-            return t;
-        });
+        const task = dbData.tasks.find(t => t.id === id);
+        if (task) {
+            task.isDeleted = false;
+            task.deletedAt = null; 
+        }
         pushToCloud();
     }
 
+    // SEKMELER ARASI GEÇİŞ
     window.switchTab = function(tab) {
         currentTab = tab;
+        deselectNotepad();
         document.getElementById('tab-active').classList.toggle('active', tab === 'active');
         document.getElementById('tab-completed').classList.toggle('active', tab === 'completed');
         document.getElementById('tab-deleted').classList.toggle('active', tab === 'deleted');
         renderTasks();
     }
 
+    // İSTATİSTİK SAYICILARI GÜNCELLEME
     function updateStats() {
         const activeCount = dbData.tasks.filter(t => !t.completed && !t.isDeleted).length;
         const highCount = dbData.tasks.filter(t => !t.completed && !t.isDeleted && t.priority === 3).length;
@@ -203,35 +330,43 @@ const firebaseConfig = {
         document.getElementById('stat-done-val').innerText = completedCount;
     }
 
+    // ARKA PLANDA ÇALIŞAN OTOMATİK 24 SAAT SİLME SAYACI
     setInterval(function() {
         let changed = false;
         const now = Date.now();
-        dbData.tasks = dbData.tasks.filter(t => {
-            if (t.deletedAt && (now - t.deletedAt >= 300000)) {
-                changed = true;
-                return false;
-            }
-            return true;
-        });
-        if (changed) pushToCloud();
-        renderTasks();
-    }, 1000);
+        const birGunMilisaniye = 24 * 60 * 60 * 1000; 
 
+        if (dbData.tasks) {
+            dbData.tasks = dbData.tasks.filter(t => {
+                if (t.isDeleted && t.deletedAt && (now - t.deletedAt >= birGunMilisaniye)) {
+                    if (selectedTaskId === t.id) deselectNotepad();
+                    changed = true;
+                    return false; 
+                }
+                return true;
+            });
+
+            if (changed) {
+                pushToCloud();
+            }
+        }
+    }, 30000); // Her 30 saniyede bir kontrol eder
+
+    // LİSTEYİ EKRANA ÇİZME
     window.renderTasks = function() {
         const taskList = document.getElementById('taskList');
-        const searchInput = document.getElementById('searchInput').value.toLowerCase();
+        if (!taskList) return;
         taskList.innerHTML = '';
         const now = Date.now();
+        const birGunMilisaniye = 24 * 60 * 60 * 1000;
 
         let filtered = [...dbData.tasks].sort((a, b) => b.priority - a.priority);
 
         filtered = filtered.filter(t => {
             if (currentTab === 'deleted') return t.isDeleted;
-            if (currentTab === 'active') return !t.completed && !t.isDeleted;
             if (currentTab === 'completed') return t.completed && !t.isDeleted;
+            return !t.completed && !t.isDeleted;
         });
-
-        filtered = filtered.filter(t => t.text.toLowerCase().includes(searchInput));
 
         if (filtered.length === 0) {
             taskList.innerHTML = `<li class="empty-message">Görev bulunamadı.</li>`;
@@ -241,18 +376,52 @@ const firebaseConfig = {
         filtered.forEach(task => {
             const li = document.createElement('li');
             let pLabel = task.priority === 3 ? 'Yüksek' : task.priority === 2 ? 'Orta' : 'Düşük';
-            let pClass = task.priority === 3 ? 'yuksek' : task.priority === 2 ? 'orta' : 'dusuk';
+            let isSelectedClass = (task.id === selectedTaskId) ? 'selected-task' : '';
 
             if (currentTab === 'deleted') {
-                const msLeft = 300000 - (now - task.deletedAt);
-                const min = Math.max(0, Math.floor(msLeft / 60000));
-                const sec = Math.max(0, Math.floor((msLeft % 60000) / 1000));
+                let kalanSureMetni = "";
+                if (task.deletedAt) {
+                    let gecenSure = now - task.deletedAt;
+                    let kalanSure = birGunMilisaniye - gecenSure;
+                    if (kalanSure > 0) {
+                        let saat = Math.floor(kalanSure / (1000 * 60 * 60));
+                        let dakika = Math.floor((kalanSure % (1000 * 60 * 60)) / (1000 * 60));
+                        kalanSureMetni = `<span class="countdown-timer">⏳ ${saat}s ${dakika}dk sonra kalıcı silinecek</span>`;
+                    }
+                }
 
                 li.className = `task-item deleted-status`;
-                li.innerHTML = `<div class="task-left"><div class="task-text-container"><span class="task-text">${task.text}</span><div class="task-meta"><span class="badge badge-${pClass}">${pLabel}</span><span class="countdown-timer">⏳ ${min}:${sec < 10 ? '0' : ''}${sec}</span></div></div></div><div class="action-btns"><button class="btn-restore" onclick="restoreTask(${task.id}, event)">Geri</button></div>`;
+                li.innerHTML = `
+                    <div class="task-left">
+                        <div class="task-text-container">
+                            <span class="task-text">${task.text}</span>
+                            <div class="task-meta">${kalanSureMetni}</div>
+                        </div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-restore" onclick="restoreTask(${task.id}, event)">Geri Al</button>
+                    </div>`;
             } else {
-                li.className = `task-item priority-${pClass} ${task.completed ? 'completed' : ''}`;
-                li.innerHTML = `<div class="task-left"><input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id}, event)"><div class="task-text-container"><span class="task-text">${task.text}</span><div class="task-meta"><span class="badge badge-${pClass}">${pLabel}</span><span>⏱️ ${task.timestamp}</span></div></div></div><button class="btn-delete" onclick="moveToTrash(${task.id}, event)">Sil</button>`;
+                li.className = `task-item priority-${task.priority} ${task.completed ? 'completed' : ''} ${isSelectedClass}`;
+                li.setAttribute('onclick', `selectTask(${task.id})`);
+                
+                let noteIcon = task.note ? ' 📝' : '';
+                
+                li.innerHTML = `
+                    <div class="task-left">
+                        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onclick="toggleTask(${task.id}, event)">
+                        <div class="task-text-container">
+                            <span class="task-text">${task.text} <span style="font-weight:bold; color:#2563eb;">${noteIcon}</span></span>
+                            <div class="task-meta">
+                                <span class="badge" style="background-color: rgba(0,0,0,0.06); color: #334155;">${pLabel}</span>
+                                <span>⏱️ ${task.timestamp}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-edit" onclick="editTask(${task.id}, event)">Düzenle</button>
+                        <button class="btn-delete" onclick="moveToTrash(${task.id}, event)">Sil</button>
+                    </div>`;
             }
             taskList.appendChild(li);
         });
